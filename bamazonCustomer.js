@@ -17,20 +17,24 @@ connection.connect(function(err) {
 
 // step 1: display all the items for sale in the bamazon_db database
 function displayAll() {
-	console.log("Selecting all products... \n");
+	console.log("Here are all of our products for sale: \n");
 	connection.query("SELECT * FROM products", function (err,res) {
 		if (err) throw err;
 		console.log(res);
+		startInquire();
 	});
 }
 
-// displayAll();
+displayAll();
+
+
 
 // -------------------------------------------------------------------
 
 // Step 2: Prompt the user questions
 
-inquirer
+function startInquire() {
+	inquirer
 	.prompt([
 		// list
 		{
@@ -61,7 +65,7 @@ inquirer
 			var query = "SELECT stock_quantity FROM products WHERE ?";
 			connection.query(query, { team_id: inquirerResponse.userIDChoice }, function(err,res){
 				for (var i=0; i < res.length; i++) {
-					console.log("Quanitity: " + res[i].stock_quantity);
+					// console.log("Quanitity: " + res[i].stock_quantity);
 
 					var currentStock = res[i].stock_quantity;
 					console.log(currentStock);
@@ -71,8 +75,8 @@ inquirer
 						console.log("Insufficient quantity!");
 					}
 					else {
-						console.log("There are enough!");
-						// updateQuant();
+						// console.log("There are enough!");
+						updateQuant();
 					
 					}
 				}
@@ -156,6 +160,10 @@ inquirer
 
 	// Ends the .then function and the query
 	});
+
+};
+
+
 
 
 //Ends the original connection
