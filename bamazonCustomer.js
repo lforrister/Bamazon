@@ -13,7 +13,7 @@ connection.connect(function(err) {
 	if (err) throw err;
 	console.log("connected");
 
-
+// -------------------------------------------------------------------
 
 // step 1: display all the items for sale in the bamazon_db database
 function displayAll() {
@@ -25,6 +25,8 @@ function displayAll() {
 }
 
 // displayAll();
+
+// -------------------------------------------------------------------
 
 // Step 2: Prompt the user questions
 
@@ -46,6 +48,8 @@ inquirer
 
 		])
 
+		// prompt is closed out
+// ----------------------------------------------------------------------------
 
 	.then(function(inquirerResponse) {
 		console.log("You chose: " + inquirerResponse.userUnitsChoice + " units of product ID " + inquirerResponse.userIDChoice);
@@ -53,25 +57,104 @@ inquirer
 
 		// Step 3: Select the quantity of the product ID they selected
 
-		var query = "SELECT stock_quantity FROM products WHERE ?";
-		connection.query(query, { team_id: inquirerResponse.userIDChoice }, function(err,res){
-			for (var i=0; i < res.length; i++) {
-				console.log("Quanitity: " + res[i].stock_quantity);
+		function checkQuant() {
+			var query = "SELECT stock_quantity FROM products WHERE ?";
+			connection.query(query, { team_id: inquirerResponse.userIDChoice }, function(err,res){
+				for (var i=0; i < res.length; i++) {
+					console.log("Quanitity: " + res[i].stock_quantity);
 
-				// check to see if the quantity is less than the quanity they want
-				if (res[i].stock_quantity < inquirerResponse.userUnitsChoice) {
-					console.log("Insufficient quantity!");
+					var currentStock = res[i].stock_quantity;
+					console.log(currentStock);
+
+					// check to see if the quantity is less than the quanity they want
+					if (res[i].stock_quantity < inquirerResponse.userUnitsChoice) {
+						console.log("Insufficient quantity!");
+					}
+					else {
+						console.log("There are enough!");
+						// updateQuant();
+					
+					}
 				}
-				else {
-					console.log("There are enough!");
+		
+			}) 
+		};
+
+		// checkQuant();
+		// --------------------------------------------------------------------------------------
+
+	
+
+		function updateQuant() {
+			var query = "SELECT stock_quantity FROM products WHERE ?";
+			connection.query(query, { team_id: inquirerResponse.userIDChoice }, function(err,res){
+				for (var i=0; i < res.length; i++) {
+
+					var currentStock = parseInt(res[i].stock_quantity);
+					console.log("Current Quantity: " + currentStock);
+
+					var userQuant = parseInt(inquirerResponse.userUnitsChoice);
+					console.log("User Quantity: " + userQuant);
+
+					var newStock = currentStock - userQuant;
+					console.log("New Stock: " + newStock);
+
+			
+
+					
+					console.log("Updating Product Quantities... \n");
+					connection.query(
+						"UPDATE products SET ? WHERE ?",
+						[
+							{
+								stock_quantity: newStock
+							},
+							{
+								team_id: inquirerResponse.userIDChoice
+							}
+						],
+						function(err,res) {
+							console.log("Quantity Updated to " + newStock);
+						});
+			
 				}
-			}
+		
+			}) 
+
+
+
+		};
+
+		updateQuant();
+
+		// ----------------------------------------------------------------------
+
+		function checkPrice() {
+			var query = "SELECT price FROM products WHERE ?";
+			connection.query(query, { team_id: inquirerResponse.userIDChoice }, function(err,res){
+				for (var i=0; i < res.length; i++) {
+
+					var price = parseInt(res[i].price);
+					console.log("Cost Per Item: $ " + price);
+
+					var userQuant = parseInt(inquirerResponse.userUnitsChoice);
+					console.log("User Quantity: " + userQuant);
+
+					var userPrice = price *  userQuant;
+					console.log("Your total cost is: $" + userPrice);
+			
+				}
+		
+			}) 
+
+
+
+		};
+		checkPrice();
 
 		
-		})
-		
 
-
+	// Ends the .then function and the query
 	});
 
 
