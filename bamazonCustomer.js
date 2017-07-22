@@ -138,10 +138,10 @@ function startInquire() {
 			connection.query(query, { team_id: inquirerResponse.userIDChoice }, function(err,res){
 				for (var i=0; i < res.length; i++) {
 
-					var price = parseInt(res[i].price);
+					var price = parseFloat(res[i].price);
 					console.log("Cost Per Item: $ " + price);
 
-					var userQuant = parseInt(inquirerResponse.userUnitsChoice);
+					var userQuant = parseFloat(inquirerResponse.userUnitsChoice);
 					console.log("User Quantity: " + userQuant);
 
 					var userPrice = price *  userQuant;
